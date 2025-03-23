@@ -9,8 +9,8 @@ const demoOrders = [
     id: "ORD123456",
     customerName: "John Doe",
     customerAddress: "123 Main St, Cityville",
-    orderType: "delivery",
-    status: "pending",
+    orderType: "delivery" as const,
+    status: "pending" as const,
     timestamp: "2023-08-15T19:30:00",
     totalAmount: 35.97,
     products: [
@@ -24,8 +24,8 @@ const demoOrders = [
   {
     id: "ORD123457",
     customerName: "Jane Smith",
-    orderType: "dine-in",
-    status: "preparing",
+    orderType: "dine-in" as const,
+    status: "preparing" as const,
     tableId: "5",
     tableName: "Table 5",
     timestamp: "2023-08-15T19:15:00",
@@ -40,8 +40,8 @@ const demoOrders = [
   {
     id: "ORD123458",
     customerName: "David Johnson",
-    orderType: "takeaway",
-    status: "ready",
+    orderType: "takeaway" as const,
+    status: "ready" as const,
     timestamp: "2023-08-15T18:45:00",
     totalAmount: 29.98,
     products: [
@@ -52,8 +52,8 @@ const demoOrders = [
   {
     id: "ORD123459",
     customerName: "Sarah Williams",
-    orderType: "dine-in",
-    status: "completed",
+    orderType: "dine-in" as const,
+    status: "completed" as const,
     tableId: "10",
     tableName: "Table 10",
     timestamp: "2023-08-15T17:30:00",
@@ -71,8 +71,8 @@ const demoOrders = [
     id: "ORD123460",
     customerName: "Michael Brown",
     customerAddress: "456 Oak Ave, Townsville",
-    orderType: "delivery",
-    status: "cancelled",
+    orderType: "delivery" as const,
+    status: "cancelled" as const,
     timestamp: "2023-08-15T18:00:00",
     totalAmount: 37.97,
     products: [

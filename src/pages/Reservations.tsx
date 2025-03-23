@@ -15,21 +15,21 @@ import { toast } from "sonner";
 
 // Demo data
 const demoTables = [
-  { id: "1", name: "Table 1", capacity: 2, status: "available", x: -5, y: -5, width: 1, length: 1 },
-  { id: "2", name: "Table 2", capacity: 2, status: "reserved", x: -3, y: -5, width: 1, length: 1 },
-  { id: "3", name: "Table 3", capacity: 4, status: "available", x: -1, y: -5, width: 1.2, length: 1.8 },
-  { id: "4", name: "Table 4", capacity: 4, status: "occupied", x: 1, y: -5, width: 1.2, length: 1.8 },
-  { id: "5", name: "Table 5", capacity: 4, status: "reserved", x: 3, y: -5, width: 1.2, length: 1.8 },
-  { id: "6", name: "Table 6", capacity: 6, status: "available", x: 5, y: -5, width: 2, length: 1.8 },
-  { id: "7", name: "Table 7", capacity: 2, status: "available", x: -5, y: -1, width: 1, length: 1 },
-  { id: "8", name: "Table 8", capacity: 2, status: "occupied", x: -3, y: -1, width: 1, length: 1 },
-  { id: "9", name: "Table 9", capacity: 4, status: "reserved", x: -1, y: -1, width: 1.2, length: 1.8 },
-  { id: "10", name: "Table 10", capacity: 4, status: "available", x: 1, y: -1, width: 1.2, length: 1.8 },
-  { id: "11", name: "Table 11", capacity: 6, status: "available", x: 3, y: -1, width: 2, length: 1.8 },
-  { id: "12", name: "Table 12", capacity: 8, status: "occupied", x: -4, y: 3, width: 3, length: 1.8 },
-  { id: "13", name: "Table 13", capacity: 8, status: "available", x: 0, y: 3, width: 3, length: 1.8 },
-  { id: "14", name: "Table 14", capacity: 2, status: "reserved", x: 4, y: 3, width: 1, length: 1 },
-  { id: "15", name: "Table 15", capacity: 2, status: "available", x: 6, y: 3, width: 1, length: 1 },
+  { id: "1", name: "Table 1", capacity: 2, status: "available" as const, x: -5, y: -5, width: 1, length: 1 },
+  { id: "2", name: "Table 2", capacity: 2, status: "reserved" as const, x: -3, y: -5, width: 1, length: 1 },
+  { id: "3", name: "Table 3", capacity: 4, status: "available" as const, x: -1, y: -5, width: 1.2, length: 1.8 },
+  { id: "4", name: "Table 4", capacity: 4, status: "occupied" as const, x: 1, y: -5, width: 1.2, length: 1.8 },
+  { id: "5", name: "Table 5", capacity: 4, status: "reserved" as const, x: 3, y: -5, width: 1.2, length: 1.8 },
+  { id: "6", name: "Table 6", capacity: 6, status: "available" as const, x: 5, y: -5, width: 2, length: 1.8 },
+  { id: "7", name: "Table 7", capacity: 2, status: "available" as const, x: -5, y: -1, width: 1, length: 1 },
+  { id: "8", name: "Table 8", capacity: 2, status: "occupied" as const, x: -3, y: -1, width: 1, length: 1 },
+  { id: "9", name: "Table 9", capacity: 4, status: "reserved" as const, x: -1, y: -1, width: 1.2, length: 1.8 },
+  { id: "10", name: "Table 10", capacity: 4, status: "available" as const, x: 1, y: -1, width: 1.2, length: 1.8 },
+  { id: "11", name: "Table 11", capacity: 6, status: "available" as const, x: 3, y: -1, width: 2, length: 1.8 },
+  { id: "12", name: "Table 12", capacity: 8, status: "occupied" as const, x: -4, y: 3, width: 3, length: 1.8 },
+  { id: "13", name: "Table 13", capacity: 8, status: "available" as const, x: 0, y: 3, width: 3, length: 1.8 },
+  { id: "14", name: "Table 14", capacity: 2, status: "reserved" as const, x: 4, y: 3, width: 1, length: 1 },
+  { id: "15", name: "Table 15", capacity: 2, status: "available" as const, x: 6, y: 3, width: 1, length: 1 },
 ];
 
 const demoReservations = [
@@ -43,7 +43,7 @@ const demoReservations = [
     partySize: 4,
     tableId: "5",
     tableName: "Table 5",
-    status: "confirmed",
+    status: "confirmed" as const,
   },
   {
     id: "2",
@@ -55,7 +55,7 @@ const demoReservations = [
     partySize: 2,
     tableId: "2",
     tableName: "Table 2",
-    status: "pending",
+    status: "pending" as const,
     specialRequests: "Anniversary celebration, would like a quiet corner if possible.",
   },
   {
@@ -68,7 +68,7 @@ const demoReservations = [
     partySize: 6,
     tableId: "6",
     tableName: "Table 6",
-    status: "cancelled",
+    status: "cancelled" as const,
   },
   {
     id: "4",
@@ -80,7 +80,7 @@ const demoReservations = [
     partySize: 3,
     tableId: "9",
     tableName: "Table 9",
-    status: "confirmed",
+    status: "confirmed" as const,
     specialRequests: "One person has a gluten allergy.",
   },
   {
@@ -93,7 +93,7 @@ const demoReservations = [
     partySize: 2,
     tableId: "14",
     tableName: "Table 14",
-    status: "confirmed",
+    status: "confirmed" as const,
   },
 ];
 
