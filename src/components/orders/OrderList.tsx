@@ -19,12 +19,15 @@ interface OrderProduct {
   quantity: number;
 }
 
-interface Order {
+export type OrderStatus = "pending" | "preparing" | "ready" | "completed" | "cancelled";
+export type OrderType = "dine-in" | "takeaway" | "delivery";
+
+export interface Order {
   id: string;
   customerName: string;
   customerAddress?: string;
-  orderType: "dine-in" | "takeaway" | "delivery";
-  status: "pending" | "preparing" | "ready" | "completed" | "cancelled";
+  orderType: OrderType;
+  status: OrderStatus;
   tableId?: string;
   tableName?: string;
   timestamp: string;
@@ -35,7 +38,7 @@ interface Order {
 
 interface OrderListProps {
   orders: Order[];
-  onUpdateStatus: (orderId: string, status: string) => void;
+  onUpdateStatus: (orderId: string, status: OrderStatus) => void;
 }
 
 const OrderList: React.FC<OrderListProps> = ({ orders, onUpdateStatus }) => {

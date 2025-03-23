@@ -34,7 +34,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
-interface Reservation {
+export type ReservationStatus = "pending" | "confirmed" | "cancelled";
+
+export interface Reservation {
   id: string;
   customerName: string;
   customerEmail: string;
@@ -44,14 +46,14 @@ interface Reservation {
   partySize: number;
   tableId: string;
   tableName: string;
-  status: "pending" | "confirmed" | "cancelled";
+  status: ReservationStatus;
   specialRequests?: string;
 }
 
 interface ReservationListProps {
   reservations: Reservation[];
   onViewDetails: (reservationId: string) => void;
-  onUpdateStatus: (reservationId: string, status: "confirmed" | "cancelled") => void;
+  onUpdateStatus: (reservationId: string, status: ReservationStatus) => void;
 }
 
 const ReservationList: React.FC<ReservationListProps> = ({

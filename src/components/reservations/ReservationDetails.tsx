@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -14,26 +13,13 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock, Mail, Phone, Users, MapPin, MessageSquare, CheckCircle, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-
-interface Reservation {
-  id: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
-  date: string;
-  time: string;
-  partySize: number;
-  tableId: string;
-  tableName: string;
-  status: "pending" | "confirmed" | "cancelled";
-  specialRequests?: string;
-}
+import { ReservationStatus, Reservation } from "./ReservationList";
 
 interface ReservationDetailsProps {
   reservation: Reservation | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateStatus: (reservationId: string, status: "confirmed" | "cancelled") => void;
+  onUpdateStatus: (reservationId: string, status: ReservationStatus) => void;
 }
 
 const ReservationDetails: React.FC<ReservationDetailsProps> = ({
