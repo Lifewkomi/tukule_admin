@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         )}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-sidebar-border">
-          <h1 className="text-xl font-semibold text-sidebar-foreground">Resto Admin</h1>
+          <h1 className="text-xl font-semibold text-sidebar-foreground">TUKULE ADMIN</h1>
           <Button variant="ghost" size="icon" onClick={toggleSidebar} className="lg:hidden text-sidebar-foreground">
             <Menu size={20} />
           </Button>

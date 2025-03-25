@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="page-transition space-y-6">
       <div>
-        <h2 className="section-heading">Dashboard Overview</h2>
+        <h2 className="section-heading">TUKULE - Dashboard Overview</h2>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -26,12 +26,12 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
+    <div className="min-h-screen bg-[#a6a999] flex items-center justify-center bg-gradient-to-br from-background to-muted/30">
       <div className="max-w-md w-full px-8 py-10 bg-card border border-border/50 rounded-xl shadow-sm animate-fadeIn backdrop-blur-sm relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50 pointer-events-none" />
         
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Restaurant Admin</h1>
+          <h1 className="text-2xl font-bold tracking-tight">TUKULE</h1>
           <p className="text-muted-foreground mt-2">Sign in to access the admin panel</p>
         </div>
         
@@ -80,6 +80,7 @@ const Login: React.FC = () => {
           
           <div className="text-center text-sm text-muted-foreground mt-4">
             <p>
+              CHANGE THIS:
               Demo credentials:
               <br />
               Email: admin@restaurant.com
