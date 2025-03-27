@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, ListFilter } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import {
   Tabs,
   TabsContent,
@@ -17,86 +17,69 @@ import ProductForm from "@/components/products/ProductForm";
 import ProductList from "@/components/products/ProductList";
 import { toast } from "sonner";
 
-// Demo data
-const demoProducts = [
-  {
-    id: "1",
-    name: "Margherita Pizza",
-    description: "Classic tomato sauce, mozzarella cheese, and fresh basil on our homemade dough.",
-    price: 12.99,
-    category: "pizzas",
-    image: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFyZ2hlcml0YSUyMHBpenphfGVufDB8fDB8fHww",
-  },
-  {
-    id: "2",
-    name: "Spaghetti Carbonara",
-    description: "Spaghetti with a creamy sauce of eggs, Pecorino Romano cheese, pancetta, and black pepper.",
-    price: 14.99,
-    category: "pasta",
-    image: "https://images.unsplash.com/photo-1600803907087-f56d462fd26b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHNwYWdoZXR0aSUyMGNhcmJvbmFyYXxlbnwwfHwwfHx8MA%3D%3D",
-  },
-  {
-    id: "3",
-    name: "Caesar Salad",
-    description: "Romaine lettuce, croutons, Parmesan cheese, and our homemade Caesar dressing.",
-    price: 8.99,
-    category: "appetizers",
-    image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2Flc2FyJTIwc2FsYWR8ZW58MHx8MHx8fDA%3D",
-  },
-  {
-    id: "4",
-    name: "Tiramisu",
-    description: "Classic Italian dessert made with layers of coffee-soaked ladyfingers and mascarpone cream.",
-    price: 7.99,
-    category: "desserts",
-    image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGlyYW1pc3V8ZW58MHx8MHx8fDA%3D",
-  },
-  {
-    id: "5",
-    name: "Bruschetta",
-    description: "Toasted bread topped with diced tomatoes, fresh basil, garlic, and olive oil.",
-    price: 6.99,
-    category: "appetizers",
-    image: "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YnJ1c2NoZXR0YXxlbnwwfHwwfHx8MA%3D",
-  },
-  {
-    id: "6",
-    name: "Pepperoni Pizza",
-    description: "Classic tomato sauce, mozzarella cheese, and pepperoni on our homemade dough.",
-    price: 14.99,
-    category: "pizzas",
-    image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVwcGVyb25pJTIwcGl6emF8ZW58MHx8MHx8fDA%3D",
-  },
-];
+// Import the API service functions from your services folder.
+import {
+  getAllProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "@/API/productService";
+
+// Import the Product interface for type-checking.
+import type { Product } from "@/API/productService";
 
 const Products: React.FC = () => {
-  const [products, setProducts] = useState(demoProducts);
+  // State for storing products fetched from the backend.
+  const [products, setProducts] = useState<Product[]>([]);
+  
+  // Dialog states for adding and editing products.
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<typeof demoProducts[0] | null>(null);
+  
+  // State for the product currently selected for editing.
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  // Active tab for filtering by product category.
   const [activeTab, setActiveTab] = useState("all");
 
+  /**
+   * Fetch products from the backend when the component mounts.
+   * This uses the getAllProducts() function from our productService.
+   */
+  useEffect(() => {
+    async function fetchProductsFromServer() {
+      try {
+        const data = await getAllProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to fetch products");
+      }
+    }
+    fetchProductsFromServer();
+  }, []);
+
+  /**
+   * Handle adding a new product.
+   * Convert form data into an object matching our Product interface, then call createProduct().
+   */
   const handleAddProduct = async (formData: FormData) => {
     try {
-      // This would be an API call in a real implementation
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Generate a unique ID (in a real app, this would come from the backend)
-      const newProductId = (Math.max(...products.map(p => parseInt(p.id))) + 1).toString();
-      
-      const newProduct = {
-        id: newProductId,
+      // Build productData object from formData.
+      const productData = {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
         price: parseFloat(formData.get("price") as string),
         category: formData.get("category") as string,
-        // In a real app, the image would be uploaded to a server and a URL would be returned
-        // For this demo, we're using the first image in our dummy data
-        image: URL.createObjectURL(formData.get("image") as File),
+        // For images: In a real app, upload the file and use the resulting URL.
+        image: formData.get("image") ? URL.createObjectURL(formData.get("image") as File) : "",
       };
+
+      // Call createProduct to add the product in the database.
+      const newProduct = await createProduct(productData);
       
-      setProducts([...products, newProduct]);
+      // Update local state with the new product.
+      setProducts((prev) => [...prev, newProduct]);
       setIsAddProductOpen(false);
       toast.success("Product added successfully");
     } catch (error) {
@@ -105,32 +88,32 @@ const Products: React.FC = () => {
     }
   };
 
+  /**
+   * Handle editing an existing product.
+   * Update product details and call updateProduct().
+   */
   const handleEditProduct = async (formData: FormData) => {
     try {
       if (!selectedProduct) return;
-      
-      // This would be an API call in a real implementation
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      const productId = selectedProduct.id;
-      
-      const updatedProduct = {
-        id: productId,
+
+      const productData = {
         name: formData.get("name") as string,
         description: formData.get("description") as string,
         price: parseFloat(formData.get("price") as string),
         category: formData.get("category") as string,
-        // If a new image was uploaded, use that, otherwise keep the existing image
-        image: formData.get("image") 
+        // Update image only if a new one is provided.
+        image: formData.get("image")
           ? URL.createObjectURL(formData.get("image") as File)
           : selectedProduct.image,
       };
-      
-      setProducts(products.map(product => 
-        product.id === productId ? updatedProduct : product
-      ));
-      
+
+      // Call updateProduct to update the product in the database.
+      const updated = await updateProduct(selectedProduct._id || "", productData);
+
+      // Update local state with the updated product.
+      setProducts((prev) =>
+        prev.map((prod) => (prod._id === selectedProduct._id ? updated : prod))
+      );
       setIsEditProductOpen(false);
       setSelectedProduct(null);
       toast.success("Product updated successfully");
@@ -140,13 +123,14 @@ const Products: React.FC = () => {
     }
   };
 
+  /**
+   * Handle deleting a product.
+   * Calls deleteProduct and updates the local state by filtering out the deleted product.
+   */
   const handleDeleteProduct = async (productId: string) => {
     try {
-      // This would be an API call in a real implementation
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      setProducts(products.filter(product => product.id !== productId));
+      await deleteProduct(productId);
+      setProducts((prev) => prev.filter((product) => product._id !== productId));
       toast.success("Product deleted successfully");
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -154,29 +138,35 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleEditClick = (product: typeof demoProducts[0]) => {
+  /**
+   * When clicking the edit button, set the selected product and open the edit dialog.
+   */
+  const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsEditProductOpen(true);
   };
 
-  // Filter products based on active tab
-  const filteredProducts = activeTab === "all" 
-    ? products 
-    : products.filter(product => product.category === activeTab);
+  /**
+   * Filter products based on the active tab (category).
+   * If the active tab is "all", return all products; otherwise, filter by category.
+   */
+  const filteredProducts = 
+    activeTab === "all" 
+      ? products 
+      : products.filter((product) => product.category === activeTab);
 
   return (
     <div className="page-transition space-y-6">
+      {/* Header section with title and "Add New Product" button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h2 className="section-heading mb-0">Product Management</h2>
-        <Button 
-          className="mt-4 sm:mt-0"
-          onClick={() => setIsAddProductOpen(true)}
-        >
+        <Button className="mt-4 sm:mt-0" onClick={() => setIsAddProductOpen(true)}>
           <PlusCircle size={16} className="mr-2" />
           Add New Product
         </Button>
       </div>
-      
+
+      {/* Tabs for filtering products by category */}
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="border-b border-border">
           <TabsList className="bg-transparent">
@@ -200,7 +190,7 @@ const Products: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <ProductList 
+            <ProductList
               products={filteredProducts}
               onEditProduct={handleEditClick}
               onDeleteProduct={handleDeleteProduct}
@@ -208,7 +198,7 @@ const Products: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
-      
+
       {/* Add Product Dialog */}
       <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
         <DialogContent className="max-w-3xl">
@@ -218,7 +208,7 @@ const Products: React.FC = () => {
           <ProductForm onSubmit={handleAddProduct} />
         </DialogContent>
       </Dialog>
-      
+
       {/* Edit Product Dialog */}
       <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
         <DialogContent className="max-w-3xl">
@@ -228,7 +218,7 @@ const Products: React.FC = () => {
           {selectedProduct && (
             <ProductForm 
               product={selectedProduct} 
-              onSubmit={handleEditProduct} 
+              onSubmit={handleEditProduct}
               isEditing={true}
             />
           )}
