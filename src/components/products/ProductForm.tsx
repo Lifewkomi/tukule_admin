@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImagePlus, Loader2 } from "lucide-react";
+import axios from "axios";
 
 interface ProductFormProps {
   onSubmit: (productData: FormData) => Promise<void>;
@@ -40,6 +40,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(product?.image || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Handle file selection and preview generation
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -56,7 +57,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!name.trim()) {
       toast.error("Product name is required");
@@ -80,26 +81,44 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
     try {
       setIsSubmitting(true);
-      
-      // Create FormData for image upload
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("category", category);
-      
+
+      let uploadedImageUrl = "";
+
+      // If an image is selected, upload it first
       if (image) {
-        formData.append("image", image);
+        const imageData = new FormData();
+        // Use "imgUrl" key to match the backend's expectation
+        imageData.append("imgUrl", image);
+
+        // Upload image to backend /api/upload endpoint
+        const uploadResponse = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/upload`,
+          imageData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        // Extract the permanent image URL returned by the server
+        uploadedImageUrl = uploadResponse.data.imgUrl;
       }
-      
+
+      // Create a new FormData object for the product data
+      const productData = new FormData();
+      productData.append("name", name);
+      productData.append("description", description);
+      productData.append("price", price); // price is a string that will be parsed on the backend
+      productData.append("category", category);
+      productData.append("imgUrl", uploadedImageUrl); // Use the permanent URL from the upload
+
+      // If editing, optionally include the product ID (if your backend requires it)
       if (isEditing && product?.id) {
-        formData.append("id", product.id);
+        productData.append("id", product.id);
       }
       
-      await onSubmit(formData);
+      // Call onSubmit prop with the complete product data
+      await onSubmit(productData);
       
+      // If not editing, reset the form
       if (!isEditing) {
-        // Reset form after submission if not editing
         setName("");
         setDescription("");
         setPrice("");

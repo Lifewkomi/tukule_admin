@@ -1,30 +1,30 @@
-
 import React, { useState } from "react";
-import ProductItem from "./ProductItem";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
+import { PlusCircle, ChevronUp, ChevronDown } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import ProductForm from "@/components/products/ProductForm";
+import ProductListItem from "@/components/products/ProductItem"; // Assume this is a component for a single product
+import { toast } from "sonner";
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-}
+// Import API service functions (if needed) and Product interface
+import type { Product } from "@/API/productService";
 
+// Define props for the ProductList component
 interface ProductListProps {
   products: Product[];
   onEditProduct: (product: Product) => void;
-  onDeleteProduct: (productId: string) => void;
+  onDeleteProduct: (id: string) => void;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -32,6 +32,7 @@ const ProductList: React.FC<ProductListProps> = ({
   onEditProduct,
   onDeleteProduct,
 }) => {
+  // Local state for search, filtering, and sorting
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"name" | "price">("name");
@@ -47,11 +48,10 @@ const ProductList: React.FC<ProductListProps> = ({
     { value: "beverages", label: "Beverages" },
   ];
 
+  // Filter products based on search term and selected category.
   const filteredProducts = products
     .filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = category === "all" || product.category === category;
       return matchesSearch && matchesCategory;
     })
@@ -65,73 +65,66 @@ const ProductList: React.FC<ProductListProps> = ({
       }
     });
 
+  // Toggle sort order between ascending and descending
   const toggleSortOrder = () => {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+      {/* Search and filter controls */}
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
+          <input
+            type="text"
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 w-full p-2 border rounded"
           />
         </div>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-auto">
-              {categoryOptions.find((c) => c.value === category)?.label || "Category"}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuRadioGroup value={category} onValueChange={setCategory}>
-              {categoryOptions.map((option) => (
-                <DropdownMenuRadioItem key={option.value} value={option.value}>
-                  {option.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
+        <div>
+          {/* Category Dropdown */}
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className="p-2 border rounded">
+            {categoryOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                Sort by: {sortBy === "name" ? "Name" : "Price"}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup value={sortBy} onValueChange={(value) => setSortBy(value as "name" | "price")}>
-                <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="price">Price</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
+          <div>
+            {/* Sort By Dropdown */}
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as "name" | "price")} className="p-2 border rounded">
+              <option value="name">Name</option>
+              <option value="price">Price</option>
+            </select>
+          </div>
           <Button variant="outline" size="icon" onClick={toggleSortOrder}>
             {sortOrder === "asc" ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
         </div>
       </div>
-      
+
+      {/* Products Grid */}
       {filteredProducts.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No products found</p>
+          <p className="text-muted-foreground mb-4">No products found in this category</p>
+          <Button onClick={() => toast.info("Add a product via the admin panel")}>
+            <PlusCircle size={16} className="mr-2" />
+            Add New Product
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
-            <ProductItem
-              key={product.id}
+            // Use product._id (the default MongoDB id) as the key
+            <ProductListItem
+              key={product._id}
               product={product}
-              onEdit={onEditProduct}
-              onDelete={onDeleteProduct}
+              onEdit={() => onEditProduct(product)}
+              onDelete={() => onDeleteProduct(product._id || "")} // Ensure _id is passed
             />
           ))}
         </div>

@@ -73,6 +73,7 @@ const Products: React.FC = () => {
         category: formData.get("category") as string,
         // For images: In a real app, upload the file and use the resulting URL.
         image: formData.get("image") ? URL.createObjectURL(formData.get("image") as File) : "",
+        
       };
 
       // Call createProduct to add the product in the database.
@@ -129,6 +130,8 @@ const Products: React.FC = () => {
    */
   const handleDeleteProduct = async (productId: string) => {
     try {
+      // Log productId to verify it is defined and is the _id from MongoDB
+      console.log("Deleting product with _id:", productId);
       await deleteProduct(productId);
       setProducts((prev) => prev.filter((product) => product._id !== productId));
       toast.success("Product deleted successfully");
@@ -193,13 +196,14 @@ const Products: React.FC = () => {
             <ProductList
               products={filteredProducts}
               onEditProduct={handleEditClick}
-              onDeleteProduct={handleDeleteProduct}
+              onDeleteProduct={(id) => handleDeleteProduct(id)}
             />
+            
           )}
         </TabsContent>
       </Tabs>
 
-      {/* Add Product Dialog */}
+      {/* Add Product Dialog on PRODUCTS page */}
       <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
@@ -209,7 +213,7 @@ const Products: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Product Dialog */}
+      {/* Edit Product Dialog on PRODUCTS page*/}
       <Dialog open={isEditProductOpen} onOpenChange={setIsEditProductOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
