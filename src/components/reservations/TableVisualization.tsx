@@ -391,7 +391,7 @@ const TableVisualization: React.FC<TableVisualizationProps> = ({
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Restaurant Layout</CardTitle>
+            <CardTitle>TUKULE - Restaurant Layout</CardTitle>
             <CardDescription>
               3D visualization of tables and their status
             </CardDescription>
